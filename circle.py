@@ -11,6 +11,7 @@ class Circle:
         self.color = color
         self.acceleration_x = acceleration_x 
         self.acceleration_y = acceleration_y 
+        self.breakp = False
 
     def dessiner(self, fenetre):
         pg.draw.circle(fenetre, self.color, (self.x, self.y), self.radius)
@@ -20,12 +21,6 @@ class Circle:
 
     def deplacer(self, largeur_fenetre, hauteur_fenetre, dt):
 
-        
-
-        if self.x + self.radius > largeur_fenetre:
-            self.x = largeur_fenetre - self.radius
-        elif self.x - self.radius < 0:
-            self.x = self.radius
 
         if self.y + self.radius > hauteur_fenetre:
             self.y = hauteur_fenetre - self.radius
@@ -35,7 +30,16 @@ class Circle:
         self.x_old = self.x
         self.y_old = self.y
 
-        self.x = self.x + velocity_x + self.acceleration_x * dt * dt
+        if self.x + self.radius > largeur_fenetre:
+            self.x = largeur_fenetre - self.radius
+            self.breakp = True
+        elif self.x - self.radius < 0:
+            self.x = self.radius
+        else:
+            self.x = self.x + velocity_x + self.acceleration_x * dt * dt
+
+        
+        
         self.y = self.y + velocity_y + self.acceleration_y * dt * dt
         
         
@@ -64,5 +68,12 @@ class Circle:
             self.y += 0.5 * delta * ny
             otherCircle.x -= 0.5 * delta * nx 
             otherCircle.y -= 0.5 * delta * ny
+            return True
+        return False
+    
+    def get_cells(self, cell_size):
+        min_x, max_x = (self.x - self.radius) // cell_size, (self.x + self.radius) // cell_size
+        min_y, max_y = (self.y - self.radius) // cell_size, (self.y + self.radius) // cell_size
+        return [(x, y) for x in range(int(min_x), int(max_x) + 1) for y in range(int(min_y), int(max_y) + 1)]
 
 
